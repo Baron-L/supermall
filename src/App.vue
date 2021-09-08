@@ -14,5 +14,5 @@ export default {
 </script>
 
 <style>
-@import "./assets/css/bass.css";
+@import "assets/css/bass.css";
 </style>
