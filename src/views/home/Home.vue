@@ -3,6 +3,7 @@
     <div id="home">
       <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
       <home-swiper :banners="banners"></home-swiper>
+      <home-recommend :recommends="recommends"></home-recommend>
     </div>
   </div>
 </template>
@@ -10,12 +11,14 @@
 <script>
 import NavBar from 'components/common/navbar/NavBar'
 import HomeSwiper from './homeChild/HomeSwiper'
+import HomeRecommend from './homeChild/HomeRecommend'
 import { getHomeDataList } from 'network/home'
 export default {
   name: 'Home',
   components: {
     NavBar,
     HomeSwiper,
+    HomeRecommend,
   },
   created () {
     // 获取数据
