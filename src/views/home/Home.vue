@@ -2,11 +2,13 @@
   <div>
     <div id="home">
       <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-      <home-swiper :banners="banners"></home-swiper>
-      <home-recommend :recommends="recommends"></home-recommend>
-      <feature-view></feature-view>
-      <tab-control :titles="titles" class="tab-control" @tabClick="tabClick"></tab-control>
-      <goods-list :goods="showGoods"></goods-list>
+      <scroll class="content">
+        <home-swiper :banners="banners"></home-swiper>
+        <home-recommend :recommends="recommends"></home-recommend>
+        <feature-view></feature-view>
+        <tab-control :titles="titles" class="tab-control" @tabClick="tabClick"></tab-control>
+        <goods-list :goods="showGoods"></goods-list>
+      </scroll>
     </div>
   </div>
 </template>
@@ -19,9 +21,10 @@ import FeatureView from './homeChild/FeatureView.vue'
 import NavBar from 'components/common/navbar/NavBar'
 import TabControl from 'components/business/tabControl/TabControl'
 import GoodsList from 'components/business/goods/GoodsList'
-
+import Scroll from 'components/common/scroll/Scroll'
 
 import { getHomeDataList, getHomeGoodsList } from 'network/home'
+
 export default {
   name: 'Home',
   components: {
@@ -31,6 +34,7 @@ export default {
     NavBar,
     TabControl,
     GoodsList,
+    Scroll,
   },
   created () {
     this.getHomeDataList()
@@ -90,9 +94,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   #home {
-   padding-top: 44px; 
+   /* padding-top: 44px;  */
+   height: 100vh;
+   position: relative;
   }
   .home-nav {
     background-color: var(--color-tint);
@@ -108,5 +114,13 @@ export default {
     position: sticky;
     top: 44px;
     z-index: 9;
+  }
+  .content{
+    overflow: hidden;
+    position: absolute;
+    top: 44px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
   }
 </style>
