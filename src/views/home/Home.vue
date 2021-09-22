@@ -2,13 +2,15 @@
   <div>
     <div id="home">
       <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-      <scroll class="content">
+      <scroll class="content" ref="scroll">
         <home-swiper :banners="banners"></home-swiper>
         <home-recommend :recommends="recommends"></home-recommend>
         <feature-view></feature-view>
         <tab-control :titles="titles" class="tab-control" @tabClick="tabClick"></tab-control>
         <goods-list :goods="showGoods"></goods-list>
       </scroll>
+      <!-- 组件之间无法监听点击事件，想要监听需添加native原生事件 -->
+      <back-top @click.native="backClick"></back-top>
     </div>
   </div>
 </template>
@@ -22,7 +24,7 @@ import NavBar from 'components/common/navbar/NavBar'
 import TabControl from 'components/business/tabControl/TabControl'
 import GoodsList from 'components/business/goods/GoodsList'
 import Scroll from 'components/common/scroll/Scroll'
-
+import BackTop from 'components/business/backTop/BackTop'
 import { getHomeDataList, getHomeGoodsList } from 'network/home'
 
 export default {
@@ -35,6 +37,7 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
+    BackTop,
   },
   created () {
     this.getHomeDataList()
@@ -76,6 +79,9 @@ export default {
           this.currentType = 'sell'
           break
       }
+    },
+    backClick () {
+     this.$refs.scroll.scrollTo(0, 0)
     }
   },
   data () {
