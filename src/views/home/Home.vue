@@ -73,6 +73,13 @@ export default {
       return this.goods[this.currentType].list
     }
   },
+  activated () {
+    this.$refs.scroll.scrollTo(0, this.saveY)
+    this.$refs.scroll.refresh()
+  },
+  deactivated () {
+    this.saveY = this.$refs.scroll.getScrollY()
+  },
   methods: {
      // 获取数据
     getHomeDataList () {
@@ -133,7 +140,8 @@ export default {
       currentType: 'pop',
       isShow: false,
       tabOffsetTop: 0,
-      isTabFixed: false
+      isTabFixed: false,
+      saveY: 0
     }
   }
 }
