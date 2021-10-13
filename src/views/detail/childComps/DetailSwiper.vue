@@ -8,21 +8,21 @@
 
 <script>
 import { Swiper, SwiperItem } from 'components/common/swiper'
-  export default {
-    components: {
-      Swiper,
-      SwiperItem
+export default {
+  components: {
+    Swiper,
+    SwiperItem
+  },
+  name: "DetailSwiper",
+  props: {
+    topImages: {
+      type: Array,
+      default() {
+        return []
+      }
     },
-    name: "DetailSwiper",
-    props: {
-      topImages: {
-        type: Array,
-        default() {
-          return []
-        }
-      },
-    },
-  }
+  },
+}
 </script>
 
 <style scoped>

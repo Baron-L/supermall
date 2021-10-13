@@ -21,17 +21,17 @@
 </template>
 
 <script>
-	export default {
-		name: "DetailBaseInfo",
-    props: {
-		  goods: {
-		    type: Object,
-        default() {
-		      return {}
-        }
+export default {
+  name: "DetailBaseInfo",
+  props: {
+    goods: {
+      type: Object,
+      default() {
+        return {}
       }
     }
-	}
+  }
+}
 </script>
 
 <style scoped>

@@ -42,7 +42,7 @@ import GoodsList from 'components/business/goods/GoodsList'
 import Scroll from 'components/common/scroll/Scroll'
 import BackTop from 'components/business/backTop/BackTop'
 import { getHomeDataList, getHomeGoodsList } from 'network/home'
-import { debounce } from 'common/utils'
+import { itemListenerMixin } from 'common/mixin'
 export default {
   name: 'Home',
   components: {
@@ -55,18 +55,12 @@ export default {
     Scroll,
     BackTop,
   },
+  mixins: [itemListenerMixin],
   created () {
     this.getHomeDataList()
     this.getHomeGoodsList('pop')
     this.getHomeGoodsList('new')
     this.getHomeGoodsList('sell')
-  },
-  mounted () {
-    const refresh = debounce(this.$refs.scroll.refresh, 500)
-    // 监听item中图片加载完成
-    this.$bus.$on('itemImageLoad', () => {
-      refresh()
-    })
   },
   computed: {
     showGoods() {
@@ -79,6 +73,8 @@ export default {
   },
   deactivated () {
     this.saveY = this.$refs.scroll.getScrollY()
+    // 取消全局事件的监听
+    this.$bus.$off('itemImageLoad', this.itemImgListener)
   },
   methods: {
      // 获取数据
@@ -141,7 +137,7 @@ export default {
       isShow: false,
       tabOffsetTop: 0,
       isTabFixed: false,
-      saveY: 0
+      saveY: 0,
     }
   }
 }

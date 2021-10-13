@@ -1,5 +1,5 @@
 <template>
-  <div class="shop-info">
+  <div class="shop-info" v-if="Object.keys(shop).length !== 0">
     <div class="shop-top">
       <img :src="shop.logo">
       <span class="title">{{shop.name}}</span>
@@ -36,23 +36,23 @@
 </template>
 
 <script>
-	export default {
-		name: "DetailShopInfo",
-    props: {
-		  shop: {
-		    type: Object,
-        default() {
-		      return {}
-        }
-      }
-    },
-    filters: {
-      sellCountFilter: function (value) {
-        if (value < 10000) return value;
-        return (value/10000).toFixed(1) + '万'
+export default {
+  name: "DetailShopInfo",
+  props: {
+    shop: {
+      type: Object,
+      default() {
+        return {}
       }
     }
-	}
+  },
+  filters: {
+    sellCountFilter: function (value) {
+      if (value < 10000) return value;
+      return (value/10000).toFixed(1) + '万'
+    }
+  }
+}
 </script>
 
 <style scoped>

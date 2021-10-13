@@ -11,7 +11,7 @@
 			</div>
 			<div class="comment-text">{{item.content}}</div>
 			<div class="comment-goods-info">
-				<span class="comment-time">{{item.created}}</span>
+				<span class="comment-time">{{item.created | showDate}}</span>
 				<span>{{item.style}}</span>
 			</div>
 			<div class="flex">
@@ -19,24 +19,30 @@
 					<img :src="item" alt="">
 				</div>
 			</div>
-			
 		</div>
 		
 	</div>
 </template>
 
 <script>
-	export default {
-		name: 'DetailCommentInfo',
-		props: {
-			commentInfo: {
-				type: Array,
-				default() {
-					return []
-				}
+import { formatDate } from 'common/utils'
+export default {
+	name: 'DetailCommentInfo',
+	props: {
+		commentInfo: {
+			type: Array,
+			default() {
+				return []
 			}
 		}
+	},
+	filters: {
+		showDate(value) {
+			const date = new Date(value * 1000)
+			return formatDate(date, 'yyyy-MM-dd')
+		}
 	}
+}
 </script>
 
 <style  scoped>
