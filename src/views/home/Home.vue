@@ -40,9 +40,8 @@ import NavBar from 'components/common/navbar/NavBar'
 import TabControl from 'components/business/tabControl/TabControl'
 import GoodsList from 'components/business/goods/GoodsList'
 import Scroll from 'components/common/scroll/Scroll'
-import BackTop from 'components/business/backTop/BackTop'
 import { getHomeDataList, getHomeGoodsList } from 'network/home'
-import { itemListenerMixin } from 'common/mixin'
+import { itemListenerMixin, backTopMixin } from 'common/mixin'
 export default {
   name: 'Home',
   components: {
@@ -53,9 +52,8 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
-    BackTop,
   },
-  mixins: [itemListenerMixin],
+  mixins: [itemListenerMixin, backTopMixin],
   created () {
     this.getHomeDataList()
     this.getHomeGoodsList('pop')
@@ -68,7 +66,7 @@ export default {
     }
   },
   activated () {
-    this.$refs.scroll.scrollTo(0, this.saveY)
+    this.$refs.scroll.scrollTo(0, this.saveY, 0)
     this.$refs.scroll.refresh()
   },
   deactivated () {
@@ -106,11 +104,11 @@ export default {
           this.currentType = 'sell'
           break
       }
-      this.$refs.tabControl1.currentIndex = index;
-      this.$refs.tabControl2.currentIndex = index;
-    },
-    backClick () {
-     this.$refs.scroll.scrollTo(0, 0)
+      if (this.$refs.tabControl1 !== undefined) {
+        this.$refs.tabControl1.currentIndex = index;
+        this.$refs.tabControl2.currentIndex = index;
+      }
+
     },
     scrollClick(position) {
       this.isShow = (-position.y) > 1000
@@ -134,7 +132,6 @@ export default {
         'sell': {page: 0, list: []}
       },
       currentType: 'pop',
-      isShow: false,
       tabOffsetTop: 0,
       isTabFixed: false,
       saveY: 0,

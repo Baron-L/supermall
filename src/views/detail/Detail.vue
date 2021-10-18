@@ -1,15 +1,17 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav"></detail-nav-bar>
-    <scroll class="content" ref="scroll">
+    <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"></detail-nav-bar>
+    <scroll class="content" ref="scroll" @scroll="detailScroll" :probe-type="3">
       <detail-swiper :top-images="topImages"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
       <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
-      <detail-param-info :paramInfo="paramInfo"></detail-param-info>
-      <detail-comment-info :commentInfo="commentInfo"></detail-comment-info>
-      <goods-list :goods="recommendInfo"></goods-list>
+      <detail-param-info ref="params" :paramInfo="paramInfo"></detail-param-info>
+      <detail-comment-info ref="comment" :commentInfo="commentInfo"></detail-comment-info>
+      <goods-list ref="recommend" :goods="recommendInfo"></goods-list>
     </scroll>
+    <detail-bottom-bar></detail-bottom-bar>
+    <back-top @click.native="backClick" v-show="isShow"></back-top>
   </div>
 </template>
 
@@ -21,10 +23,12 @@ import DetailShopInfo from './childComps/DetailShopInfo'
 import DetailGoodsInfo from './childComps/DetailGoodsInfo'
 import DetailParamInfo from './childComps/DetailParamInfo'
 import DetailCommentInfo from './childComps/DetailCommentInfo'
+import DetailBottomBar from './childComps/DetailBottomBar'
 import Scroll from 'components/common/scroll/Scroll'
 import GoodsList from 'components/business/goods/GoodsList'
 import { getDetailDataList, Goods, Shop, GoodsParam, getRecommend } from "network/detail"
-import { itemListenerMixin } from 'common/mixin'
+import { debounce } from 'common/utils'
+import { itemListenerMixin, backTopMixin } from 'common/mixin'
 export default {
   name: "Detail",
   components: {
@@ -35,10 +39,11 @@ export default {
     DetailGoodsInfo,
     DetailParamInfo,
     DetailCommentInfo,
+    DetailBottomBar,
     GoodsList,
     Scroll,
   },
-  mixins: [itemListenerMixin],
+  mixins: [itemListenerMixin, backTopMixin],
   data() {
     return {
       iid: null,
@@ -49,6 +54,9 @@ export default {
       paramInfo: {},
       commentInfo: [],
       recommendInfo: [],
+      themeTopY: [],
+      getThemeTopY: null,
+      currentIndex: 0,
     }
   },
   created () {
@@ -74,6 +82,15 @@ export default {
     getRecommend().then(res => {
       this.recommendInfo = res.data.list
     })
+
+    this.getThemeTopY = debounce(() => {
+        this.themeTopY = []
+        this.themeTopY.push(0)
+        this.themeTopY.push(this.$refs.params.$el.offsetTop)
+        this.themeTopY.push(this.$refs.comment.$el.offsetTop)
+        this.themeTopY.push(this.$refs.recommend.$el.offsetTop)
+        this.themeTopY.push(Number.MAX_VALUE)
+    }, 100)
   },
   destroyed () {
     // 取消全局事件的监听
@@ -81,8 +98,23 @@ export default {
   },
   methods: {
     imageLoad() {
-      this.$refs.scroll.refresh()
-    }
+      this.refresh()
+      this.getThemeTopY()
+    },
+    titleClick(index) {
+      this.$refs.scroll.scrollTo(0, -this.themeTopY[index], 100)
+    },
+    detailScroll(position) {
+      const positionY = -position.y
+      let length = this.themeTopY.length
+      for (let i = 0; i < length - 1; i++) {
+        if(this.currentIndex !== i && (positionY >= this.themeTopY[i] && positionY < this.themeTopY[i+1])) {
+          this.currentIndex = i
+          this.$refs.nav.currentIndex = this.currentIndex
+        }
+      }
+      this.isShow = (-position.y) > 1000
+    },
   },
 }
 </script>
@@ -102,6 +134,6 @@ export default {
   }
 
   .content {
-    height: calc(100% - 44px);
+    height: calc(100% - 44px - 49px);
   }
 </style>
