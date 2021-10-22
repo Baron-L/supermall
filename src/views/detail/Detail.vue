@@ -29,6 +29,7 @@ import GoodsList from 'components/business/goods/GoodsList'
 import { getDetailDataList, Goods, Shop, GoodsParam, getRecommend } from "network/detail"
 import { debounce } from 'common/utils'
 import { itemListenerMixin, backTopMixin } from 'common/mixin'
+import { mapActions } from 'vuex'
 export default {
   name: "Detail",
   components: {
@@ -97,6 +98,9 @@ export default {
     this.$bus.$off('itemImageLoad', this.itemImgListener)
   },
   methods: {
+    ...mapActions({
+      addCart: 'addToCart'
+    }),
     imageLoad() {
       this.refresh()
       this.getThemeTopY()
@@ -124,7 +128,12 @@ export default {
       product.price = this.goods.realPrice
       product.iid = this.iid
       //  添加购物车
-      this.$store.dispatch('addToCart', product)
+      this.addCart(product).then(res => {
+        this.$toast.show(res, 2000)
+      })
+      // this.$store.dispatch('addToCart', product).then(res => {
+      //   console.log(res);
+      // })
     }
   },
 }

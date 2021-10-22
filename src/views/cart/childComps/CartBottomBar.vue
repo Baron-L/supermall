@@ -11,7 +11,7 @@
     <div class="count">
       合计¥:{{totalprice}}
     </div>
-    <div class="calc">去计算({{checklength}})</div>
+    <div class="calc" @click="calcClick">去计算({{checklength}})</div>
 </div>
 </template>
 
@@ -37,7 +37,13 @@ export default {
       }
       // this.cartList.forEach(item => item.checked = !this.isSelectAll)
       // this.$toast.methods.isShow
+    },
+    calcClick () {
+      if (!this.isSelectAll) {
+        this.$toast.show('请选择购买的商品', 2000)
+      }
     }
+
   },
   computed: {
    ...mapGetters(['cartList', 'cartLength']),
