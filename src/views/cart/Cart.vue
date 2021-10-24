@@ -36,10 +36,10 @@ export default {
   background-color: var(--color-tint);
   color: #fff;
 }
-.bottom{
+/* .bottom{
   position: fixed;
   bottom: 50px;
   left: 0;
   right: 0;
-}
+} */
 </style>
