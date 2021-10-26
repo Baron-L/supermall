@@ -1,141 +1,150 @@
 <template>
-  <div class="wrapper">
-    <!-- <h2>分类</h2> -->
-    <ul class="content">
-      <li>分类1</li>
-      <li>分类2</li>
-      <li>分类3</li>
-      <li>分类4</li>
-      <li>分类5</li>
-      <li>分类6</li>
-      <li>分类7</li>
-      <li>分类8</li>
-      <li>分类9</li>
-      <li>分类10</li>
-      <li>分类11</li>
-      <li>分类12</li>
-      <li>分类13</li>
-      <li>分类14</li>
-      <li>分类15</li>
-      <li>分类16</li>
-      <li>分类17</li>
-      <li>分类18</li>
-      <li>分类19</li>
-      <li>分类20</li>
-      <li>分类21</li>
-      <li>分类22</li>
-      <li>分类23</li>
-      <li>分类24</li>
-      <li>分类25</li>
-      <li>分类26</li>
-      <li>分类27</li>
-      <li>分类28</li>
-      <li>分类29</li>
-      <li>分类30</li>
-      <li>分类31</li>
-      <li>分类32</li>
-      <li>分类33</li>
-      <li>分类34</li>
-      <li>分类35</li>
-      <li>分类36</li>
-      <li>分类37</li>
-      <li>分类38</li>
-      <li>分类39</li>
-      <li>分类40</li>
-      <li>分类41</li>
-      <li>分类42</li>
-      <li>分类43</li>
-      <li>分类44</li>
-      <li>分类45</li>
-      <li>分类46</li>
-      <li>分类47</li>
-      <li>分类48</li>
-      <li>分类49</li>
-      <li>分类50</li>
-      <li>分类51</li>
-      <li>分类52</li>
-      <li>分类53</li>
-      <li>分类54</li>
-      <li>分类55</li>
-      <li>分类56</li>
-      <li>分类57</li>
-      <li>分类58</li>
-      <li>分类59</li>
-      <li>分类60</li>
-      <li>分类61</li>
-      <li>分类62</li>
-      <li>分类63</li>
-      <li>分类64</li>
-      <li>分类65</li>
-      <li>分类66</li>
-      <li>分类67</li>
-      <li>分类68</li>
-      <li>分类69</li>
-      <li>分类70</li>
-      <li>分类71</li>
-      <li>分类72</li>
-      <li>分类73</li>
-      <li>分类74</li>
-      <li>分类75</li>
-      <li>分类76</li>
-      <li>分类77</li>
-      <li>分类78</li>
-      <li>分类79</li>
-      <li>分类80</li>
-      <li>分类81</li>
-      <li>分类82</li>
-      <li>分类83</li>
-      <li>分类84</li>
-      <li>分类85</li>
-      <li>分类86</li>
-      <li>分类87</li>
-      <li>分类88</li>
-      <li>分类89</li>
-      <li>分类90</li>
-      <li>分类91</li>
-      <li>分类92</li>
-      <li>分类93</li>
-      <li>分类94</li>
-      <li>分类95</li>
-      <li>分类96</li>
-      <li>分类97</li>
-      <li>分类98</li>
-      <li>分类99</li>
-      <li>分类100</li>
-    </ul>
+  <div id="category">
+    <nav-bar class="nav">
+      <div slot="center">商品分类</div>
+    </nav-bar>
+    <div class="content">
+      <tab-menu :childcategories="categories" @selectItem="selectItem"></tab-menu>
+      <scroll id="tab-content">
+        <div>
+          <tab-content-category :subcategories="showSubcategory"></tab-content-category>
+          <tab-control :titles="titles" @tabClick="tabclick"></tab-control>
+          <category-detail :category-data="showCategoryDetail"></category-detail>
+        </div>
+      </scroll>
+    </div>
   </div>
 </template>
 
 <script>
-import Bscroll from 'better-scroll'
+import NavBar from 'components/common/navbar/NavBar'
+import Scroll from 'components/common/scroll/Scroll'
+import TabControl from 'components/business/tabControl/TabControl'
+
+import {getCategory, getSubCategory, getCategoryDetail} from "network/category";
+import TabMenu from "./childComps/TabMenu";
+import TabContentCategory from "./childComps/TabContentCategory";
+import CategoryDetail from "./childComps/CategoryDetail";
+
 export default {
-  name: 'Category',
+  name: "Category",
+  components: {
+    NavBar,
+    TabMenu,
+    Scroll,
+    TabControl,
+    TabContentCategory,
+    CategoryDetail
+  },
   data() {
     return {
-      scroll: null
+      categories: [],
+      categoryData: {},
+      currentIndex: -1,
+      currentType: 'pop',
+      titles: [{id: 1,type: '流行'},{id: 2,type: '新款'},{id: 3,type: '精选'},],
     }
   },
-  mounted() {
-    this.scroll = new Bscroll(document.querySelector('.wrapper'), {
-      probeType: 3,
-      pullUpLoad: true
-    });
-    // this.scroll.on('scroll', (positon) => {
-    //   console.log(positon);
-    // })
-    this.scroll.on('pullingUp', () => {
-      console.log('上拉加载');
-    })
+  created() {
+    // 1.请求分类数据
+    this._getCategory()
   },
+  computed: {
+    showSubcategory() {
+      if (this.currentIndex === -1) return {}
+      return this.categoryData[this.currentIndex].subcategories
+    },
+    showCategoryDetail() {
+      if (this.currentIndex === -1) return []
+      return this.categoryData[this.currentIndex].categoryDetail[this.currentType]
+    }
+  },
+  methods: {
+    _getCategory() {
+      getCategory().then(res => {
+        // 1.获取分类数据
+        this.categories = res.data.category.list
+        // 2.初始化每个类别的子数据
+        for (let i = 0; i < this.categories.length; i++) {
+          this.categoryData[i] = {
+            subcategories: {},
+            categoryDetail: {
+              'pop': [],
+              'new': [],
+              'sell': []
+            }
+          }
+        }
+        // 3.请求第一个分类的数据
+        this._getSubcategories(0)
+      })
+    },
+    _getSubcategories(index) {
+      this.currentIndex = index;
+      const mailKey = this.categories[index].maitKey;
+      getSubCategory(mailKey).then(res => {
+        this.categoryData[index].subcategories = res.data
+        this.categoryData = {...this.categoryData}
+        this._getCategoryDetail('pop')
+        this._getCategoryDetail('sell')
+        this._getCategoryDetail('new')
+      })
+    },
+    _getCategoryDetail(type) {
+      // 1.获取请求的miniWallkey
+      const miniWallkey = this.categories[this.currentIndex].miniWallkey;
+      // 2.发送请求,传入miniWallkey和type
+      getCategoryDetail(miniWallkey, type).then(res => {
+        // 3.将获取的数据保存下来
+        this.categoryData[this.currentIndex].categoryDetail[type] = res
+        this.categoryData = {...this.categoryData}
+      })
+    },
+    /**
+     * 事件响应相关的方法
+     */
+    selectItem(index) {
+      this._getSubcategories(index)
+    },
+    tabclick(index) {
+      console.log(1111);
+      switch (index) {
+        case 0 :
+          this.currentType = 'pop'
+          break
+        case 1:
+          this.currentType = 'new'
+          break
+        case 2:
+          this.currentType = 'sell'
+      }
+    }
+  }
 }
+
 </script>
 
 <style scoped>
-  .wrapper {
-    height: 150px;
-    background-color: red;
+.nav {
+  background-color: var(--color-tint);
+  font-weight: 700;
+  color: #fff;
+  box-sizing: border-box;
+}
 
-    overflow: hidden;
-    /*overflow-y: scroll;*/
-  }
+.content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 44px;
+  bottom: 49px;
+  display: flex;
+  /*overflow: hidden;*/
+}
+
+#tab-content {
+/* height: 800px; */
+flex: 1;
+overflow: hidden;
+}
 </style>

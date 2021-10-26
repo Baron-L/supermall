@@ -21,14 +21,22 @@ export default {
       }
     },
   },
+  created () {
+    console.log(this.goodsItem);
+  },
   computed: {
     showImage() {
-      return this.goodsItem.image || this.goodsItem.show.img
+      console.log(this.goodsItem);
+      return this.goodsItem.img || this.goodsItem.image || this.goodsItem.show.img
     }
   },
   methods: {
     imageLoad() {
-      this.$bus.$emit('itemImageLoad')
+      if (this.$route.path.indexOf('/home')){
+        this.$bus.$emit('itemImageLoad')
+      }else if (this.$route.path.indexOf('/detail')){
+        this.$bus.$emit('detailImageLoad')
+      }
     },
     itemClick() {
       this.$router.push("/detail/" + this.goodsItem.iid)
